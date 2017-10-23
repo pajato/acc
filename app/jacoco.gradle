@@ -1,0 +1,38 @@
+apply plugin: 'jacoco'
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*'
+    ]
+
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/classes/debug", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+
+    // Generate new names for the *.ec files that has no spaces. NOTE this is apparently not working as intended.
+    /*
+    def ecTree = fileTree(dir: project.buildDir, includes: ["outputs/code-coverage/connected/*coverage.ec"])
+    ecTree.each {File file ->
+        def newName = file.name.replaceAll(" ", "_")
+        def newFile = new File(file.getParent(), newName)
+        def result = file.renameTo(newFile);
+        project.logger.lifecycle "Renamed file {" + file.path + "} to {" + newFile.path + "}"
+    }
+    */
+    sourceDirectories = files([mainSrc])
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir: project.buildDir, includes: [
+            "jacoco/testDebugUnitTest.exec", "outputs/code-coverage/connected/*coverage.ec"
+    ])
+}

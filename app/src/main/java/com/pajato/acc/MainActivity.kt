@@ -10,6 +10,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    /** Provide a static function to be JVM tested (off device) */
+    companion object {
+        fun add(arg1: Int, arg2: Int) = arg1 + arg2
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
